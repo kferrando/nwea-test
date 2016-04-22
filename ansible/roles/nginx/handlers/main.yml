@@ -1,0 +1,10 @@
+---
+ - name: Start Nginx
+   command: /sbin/service nginx start
+
+ - name: Stop Nginx
+   command: /sbin/service nginx stop
+
+ - name: Restart FirewallD
+   command: /sbin/service firewalld restart
+

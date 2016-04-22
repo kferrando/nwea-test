@@ -1,0 +1,13 @@
+---
+  - hosts: nwea-test
+    remote_user: keegan
+    become: yes
+    become_method: sudo
+    vars:
+      nginx_root_path: /var/www/nwea
+      nginx_port: 8888
+      rpm_epel_7: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+      git_repo: "https://github.com/nwea-techops/tech_quiz.git"
+    roles:
+      - { role: common }
+      - { role: nginx }

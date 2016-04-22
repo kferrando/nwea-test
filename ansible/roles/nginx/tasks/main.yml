@@ -1,0 +1,30 @@
+---
+  - name: Install Nginx
+    yum: name=nginx state=present
+    tags: nginx_install
+  
+  - name: Set Permissive SELinux Policy
+    selinux: policy=targeted state=permissive
+
+  - name: Allow non-Standard HTTP Port
+    firewalld: port="{{ nginx_port }}/tcp" permanent=true state=enabled
+    notify: Restart FirewallD
+
+  - name: Validate Nginx conf.d Exists
+    file: path=/etc/nginx/conf.d state=directory
+
+  - name: Copy Nginx Configuration
+    template: src=nginx.default dest=/etc/nginx/conf.d/nwea.conf
+              owner=root group=root mode=0644
+
+  - name: Enable Nginx
+    service: name=nginx enabled=yes
+    tags: nginx_enable
+    notify: Start Nginx
+
+  - name: Create Web Root
+    file: path="{{ nginx_root_path }}" state=directory
+          owner=root group=root mode=0755
+
+  - name: Load Code Repository
+    git: repo="{{ git_repo }}" dest="{{ nginx_root_path }}" depth=1 force=yes
