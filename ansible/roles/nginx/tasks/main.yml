@@ -1,14 +1,15 @@
 ---
   - name: Install Nginx
     yum: name=nginx state=present
-    tags: nginx_install
   
   - name: Set Permissive SELinux Policy
     selinux: policy=targeted state=permissive
 
   - name: Allow non-Standard HTTP Port
     firewalld: port="{{ nginx_port }}/tcp" permanent=true state=enabled
-    notify: Restart FirewallD
+
+  - name: Reload FirewallD
+    command: /sbin/service firewalld restart
 
   - name: Validate Nginx conf.d Exists
     file: path=/etc/nginx/conf.d state=directory
@@ -19,8 +20,9 @@
 
   - name: Enable Nginx
     service: name=nginx enabled=yes
-    tags: nginx_enable
-    notify: Start Nginx
+
+  - name: Start Nginx
+    command: /sbin/service nginx start
 
   - name: Create Web Root
     file: path="{{ nginx_root_path }}" state=directory
@@ -28,3 +30,6 @@
 
   - name: Load Code Repository
     git: repo="{{ git_repo }}" dest="{{ nginx_root_path }}" depth=1 force=yes
+
+  - name: Check Page Response
+    local_action: get_url url=http://{{ ansible_nodename }}:{{ nginx_port }}/ dest=/tmp/test_output timeout=5

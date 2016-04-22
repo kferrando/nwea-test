@@ -1,6 +1,17 @@
 ---
-  - name: Setup EPEL repository
+  - name: Setup EPEL repository (Centos7)
     yum: name="{{ rpm_epel_7 }}" state=present
+    when: ansible_distribution_major_version | int == 7
+    tags: epel_repo
+
+  - name: Setup EPEL repository (Centos6)
+    yum: name="{{ rpm_epel_6 }}" state=present
+    when: ansible_distribution_major_version | int == 6
+    tags: epel_repo
+
+  - name: Setup EPEL repository (Centos5)
+    yum: name="{{ rpm_epel_5 }}" state=present
+    when: ansible_distribution_major_version | int == 5
     tags: epel_repo
 
   - name: Install Git
